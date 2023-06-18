@@ -1,0 +1,98 @@
+esphome:
+  name: tic
+
+esp32:
+  board: nodemcu-32s
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  password: !secret api.password
+
+ota:
+  password: !secret ota.password
+  
+wifi:
+  ssid: !secret wifi.ssid
+  password: !secret wifi.password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: !secret ap.ssid
+    password: !secret ap.password
+
+captive_portal:
+    
+web_server:
+  port: 80
+
+uart:
+  tx_pin: GPIO17
+  rx_pin: GPIO16
+  baud_rate: 1200
+  id: uart_bus
+  parity: EVEN
+  data_bits: 7
+
+teleinfo:
+  id: myteleinfo
+  update_interval: 60s
+  historical_mode: true
+
+sensor:
+  - platform: wifi_signal
+    name: "WiFi Signal Sensor"
+    update_interval: 60s
+    unit_of_measurement: dB
+    accuracy_decimals: 0
+    force_update: false
+    icon: mdi:wifi
+  - platform: uptime
+    name: "Uptime Sensor"
+    update_interval: 60s
+    unit_of_measurement: s
+    accuracy_decimals: 0
+    force_update: false
+    icon: mdi:timer
+
+  - platform: teleinfo
+    tag_name: "IINST"
+    name: "Courant"
+    device_class: current
+    unit_of_measurement: "A"
+    icon: mdi:flash
+    teleinfo_id: myteleinfo
+  - platform: teleinfo
+    tag_name: "BASE"
+    device_class: energy
+    state_class: total_increasing
+    name: "Index"
+    unit_of_measurement: "Wh"
+    icon: mdi:home-analytics
+    teleinfo_id: myteleinfo
+  - platform: teleinfo
+    tag_name: "PAPP"
+    name: "Puissance apparente"
+    unit_of_measurement: "VA"
+    icon: mdi:power-plug
+    teleinfo_id: myteleinfo
+
+
+text_sensor:
+  - platform: teleinfo
+    tag_name: "OPTARIF"
+    name: "Option tarifaire"
+    teleinfo_id: myteleinfo
+  - platform: teleinfo
+    tag_name: "ADCO"
+    name: "Identifiant compteur"
+    teleinfo_id: myteleinfo
+
+binary_sensor:
+  - platform: status
+    name: "NodeMCU Status"
+
